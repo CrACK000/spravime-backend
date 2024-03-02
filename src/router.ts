@@ -1,11 +1,72 @@
 import express from 'express';
 import { Offers } from './app/offers';
+import { Cloud } from './app/cloud';
+import { Accounts } from './app/accounts';
+import { Counter } from './app/counter';
+import { Profiles } from './app/profiles';
+import { Authentication } from './app/authentication';
 
 const router = express.Router();
 
-router.get( '/offers', Offers.all)
-router.get( '/offers/:id', Offers.view)
-router.post('/offers/create', Offers.create)
+
+
+/*      Guest     */
+router.get( '/offers',                        Offers.all)
+router.get( '/offers/:id',                    Offers.view)
+router.get( '/cloud/:dir/:img/:resolution?',  Cloud.getImg)
+router.get( '/accounts',                      Accounts.accounts)
+router.get( '/profile/:id',                   Profiles.view)
+router.post('/counter/views',                 Counter.views)
+router.post('/report')
+
+
+
+/*      Logged in users     */
+router.post('/messages/send')
+router.post('/messages/check')
+
+
+
+/*      Reviews     */
+router.get( '/reviews/:key/all')
+router.post('/reviews/create')
+router.post('/reviews/edit')
+router.post('/reviews/delete')
+
+
+
+/*      Auth    */
+router.post('/auth/offers',         Offers.allMine)
+router.post('/auth/offers/create',  Offers.create)
+router.post('/auth/offers/edit',    Offers.edit)
+router.post('/auth/offers/delete',  Offers.remove)
+
+router.post('/auth/create-account',   Authentication.createAccount) // nedokončené
+router.post('/auth/login',            Authentication.login)
+router.get( '/auth/check-auth',       Authentication.checkAuth)
+router.get( '/auth/logout',           Authentication.logout)
+
+router.post('/auth/profile/update/login-data')
+router.post('/auth/profile/update/advanced-data')
+router.post('/auth/profile/update/social-data')
+
+router.post('/auth/avatar/update')
+
+router.post('/auth/gallery/upload')
+router.post('/auth/gallery/delete')
+
+router.post('/auth/security/password')
+router.post('/auth/security/remove-account')
+
+router.post('/auth/messages')
+router.post('/auth/messages/accounts')
+router.post('/auth/messages/add')
+router.post('/auth/messages/check')
+router.post('/auth/messages/read')
+
+
+/*
+
 /*router.post('/offers/edit', EditOffer)
 router.post('/offers/remove', RemoveOffer)
 router.post('/offers/my', MyOffers)
