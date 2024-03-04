@@ -1,6 +1,7 @@
-import passport from 'passport';
-import { ObjectId } from 'mongodb';
-import { getDb } from '../plugins/database';
+import passport from 'passport'
+import { ObjectId } from 'mongodb'
+import { User } from './models/users';
+import bcrypt from 'bcrypt';
 
 export class Authentication {
 
@@ -23,7 +24,7 @@ export class Authentication {
         }
 
         const id = new ObjectId(String(user._id))
-        const last_login = getDb().collection('users').updateOne({ _id: id }, { $set: { last_login: new Date() } })
+        const last_login = User.updateOne({ _id: id }, { $set: { last_login: new Date().toISOString() } })
 
         if (!last_login) {
           console.log('Error DB: last_login not updated.')
@@ -39,8 +40,37 @@ export class Authentication {
 
   static async createAccount(req: any, res: any) {
 
-    // @todo register
-    //const { username, email, password } = req.body
+    const { username, email, password } = req.body
+
+    const alreadyUsername = await User.findOne({ username: username })
+    const alreadyEmail = await User.findOne({ email: email })
+
+    if(alreadyUsername) {
+      return res.status(400).send({ success: false, message: 'Username already exists.' })
+    }
+
+    if(alreadyEmail) {
+      return res.status(400).send({ success: false, message: 'Email already exists.' })
+    }
+
+    bcrypt.hash(password, 10, async (err, hash) => {
+      if (err) {
+        console.log('[Create-account] Error hashing password.')
+        return res.status(500).send({ success: false, message: 'Error hashing password.' })
+      }
+
+      try {
+
+        const create = new User({ username: username, email: email, password: hash })
+        await create.save()
+        return res.status(200).send({ success: true, message: 'Account created successfully.' })
+
+      } catch (e) {
+        console.error('[Create-account] Server connection failed.', e)
+        return res.status(500).send({ success: false, message: 'Server connection failed.' })
+      }
+
+    })
 
   }
 

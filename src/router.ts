@@ -5,6 +5,8 @@ import { Accounts } from './app/accounts';
 import { Counter } from './app/counter';
 import { Profiles } from './app/profiles';
 import { Authentication } from './app/authentication';
+import { Reports } from './app/reports';
+import { Profile } from './app/auth/profile';
 
 const router = express.Router();
 
@@ -17,7 +19,7 @@ router.get( '/cloud/:dir/:img/:resolution?',  Cloud.getImg)
 router.get( '/accounts',                      Accounts.accounts)
 router.get( '/profile/:id',                   Profiles.view)
 router.post('/counter/views',                 Counter.views)
-router.post('/report')
+router.post('/report',                        Reports.create)
 
 
 
@@ -41,14 +43,14 @@ router.post('/auth/offers/create',  Offers.create)
 router.post('/auth/offers/edit',    Offers.edit)
 router.post('/auth/offers/delete',  Offers.remove)
 
-router.post('/auth/create-account',   Authentication.createAccount) // nedokončené
+router.post('/auth/create-account',   Authentication.createAccount)
 router.post('/auth/login',            Authentication.login)
 router.get( '/auth/check-auth',       Authentication.checkAuth)
 router.get( '/auth/logout',           Authentication.logout)
 
-router.post('/auth/profile/update/login-data')
-router.post('/auth/profile/update/advanced-data')
-router.post('/auth/profile/update/social-data')
+router.post('/auth/profile/update/login-data',      Profile.updateLoginData)
+router.post('/auth/profile/update/advanced-data',   Profile.updateAdvancedData)
+router.post('/auth/profile/update/social-data',     Profile.updateSocialData)
 
 router.post('/auth/avatar/update')
 

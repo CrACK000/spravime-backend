@@ -1,22 +1,20 @@
-import { getDb } from '../plugins/database';
+import { User } from './models/users';
 
 export class Accounts {
 
   static async accounts(req: any, res: any) {
 
-    const response = await getDb()
-      .collection('users')
+    const response = await User
       .find(
-        { type: { $in: ['company', 'worker'] } },
-        { projection: { password: 0 } }
+        { "profile.type": { $in: ['company', 'worker'] } },
+        { password: 0 }
       )
       .sort({ average_rating: -1 })
-      .toArray()
 
     if (response) {
-      res.status(200).json(response)
+      return res.status(200).send(response)
     } else {
-      res.status(404).json({ message: "User not found" })
+      return res.status(404).send({ message: "User not found." })
     }
 
   }

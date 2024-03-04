@@ -1,40 +1,40 @@
-import { getDb } from '../plugins/database';
-import { ObjectId, FindOneAndUpdateOptions } from 'mongodb';
+import { Offer } from './models/offer'
+import mongoose from 'mongoose'
 
 export class Offers {
 
   static async all(req: any, res: any) {
 
-    const response = await getDb().collection('offers').find().toArray()
+    const response = await Offer.find()
     return res.status(200).send(response)
 
   }
 
   static async view(req: any, res: any) {
 
-    if (!req.params.id || !ObjectId.isValid(String(req.params.id))) {
+    if (!req.params.id || !mongoose.Types.ObjectId.isValid(String(req.params.id))) {
       return res.status(404).send({  success: false, message: "Invalid id." })
     }
 
-    const id = new ObjectId(String(req.params.id))
-    const offer = await getDb().collection('offers').findOne({ _id: id })
+    const id = new mongoose.Types.ObjectId(String(req.params.id))
+    const offer = await Offer.findOne({ _id: id })
 
     if (!offer) {
-      return res.status(404).send({ success: false, message: "Offer not found." });
+      return res.status(404).send({ success: false, message: "Offer not found." })
     }
 
-    return res.status(200).send(offer);
+    return res.status(200).send(offer)
 
   }
 
   static async allMine(req: any, res: any) {
 
-    if (!req.user && !req.user._id) {
+    if (!req.user && !mongoose.Types.ObjectId.isValid(String(req.user._id))) {
       return res.status(401).send({ success: false, message: "Unauthorized." })
     }
 
-    const userId = req.user._id
-    const response = await getDb().collection('offers').find({ author: userId }).toArray()
+    const userId = new mongoose.Types.ObjectId(String(req.user._id))
+    const response = await Offer.find({ author: userId })
     return res.status(200).send(response)
 
   }
@@ -49,22 +49,18 @@ export class Offers {
       category: category,
       description: description,
       address: address,
-      time_range: time_range,
-      start_at: start_at,
-      end_at: end_at,
-      author: req.user.id,
-      created_at: new Date(),
-      closed_at: new Date().setMonth(new Date().getMonth() + 3),
-      approved: true,
+      time_range: time_range ? { start_at, end_at } : null,
+      author: new mongoose.Types.ObjectId(String(req.user.id)),
     }
 
-    const result = await getDb().collection('offers').insertOne(document)
+    const result = new Offer(document)
+    await result.save()
 
     if (!result) {
       return res.status(500).send({ success: false, message: "Database has failed." })
     }
 
-    return res.status(201).send({ success: true, message: "The request has been successfully added.", last_id: result.insertedId })
+    return res.status(201).send({ success: true, message: "The request has been successfully added.", last_id: result._id })
 
   }
 
@@ -72,12 +68,12 @@ export class Offers {
 
     const { title, section, category, address, time_range, start_at, end_at, description, offer_id } = req.body
 
-    if (!offer_id || !ObjectId.isValid(String(offer_id))) {
-      return res.status(404).send({  success: false, message: "Invalid id." })
+    if (!offer_id || !mongoose.Types.ObjectId.isValid(String(offer_id))) {
+      return res.status(404).send({ success: false, message: "Invalid id." })
     }
 
-    const id = new ObjectId(String(offer_id))
-    const filter = { _id: id };
+    const _id = new mongoose.Types.ObjectId(String(offer_id))
+    const filter = { _id: _id }
     const update = {
       $set: {
         title: title,
@@ -85,13 +81,11 @@ export class Offers {
         category: category,
         description: description,
         address: address,
-        time_range: time_range,
-        start_at: start_at,
-        end_at: end_at,
+        time_range: time_range ? { start_at, end_at } : null
       }
     }
-    const options = { returnOriginal: false } as FindOneAndUpdateOptions
-    const result = await getDb().collection('offers').findOneAndUpdate(filter, update, options)
+    const options = { new: true }
+    const result = await Offer.findOneAndUpdate(filter, update, options)
 
     if (!result) {
       return res.status(404).send({ success: false, message: "Offer not found." })
@@ -105,11 +99,10 @@ export class Offers {
 
     const { ids } = req.body
 
-    const idArray = ids.map((id: string) => new ObjectId(String(id)))
-    const filter = { _id: { $in: idArray } }
-    const result = await getDb().collection('offers').deleteMany(filter)
+    const filter = { _id: { $in: ids } }
+    const result = await Offer.deleteMany(filter)
 
-    if (!result) {
+    if (result.deletedCount === 0) {
       return res.status(404).send({ success: false, message: "Offer not found." })
     }
 

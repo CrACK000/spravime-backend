@@ -1,19 +1,26 @@
-import { MongoClient, Db } from "mongodb";
+import mongoose, { Mongoose, ConnectOptions } from 'mongoose';
 
-let _db: Db;
-let _client: MongoClient;
+let _client: Mongoose | undefined;
 
 export async function connectToDb() {
   const url = process.env.DB_URL;
-  _client = new MongoClient(url);
-  await _client.connect();
-  _db = _client.db(process.env.DB_NAME);
+  _client = await mongoose.connect(url, {
+    dbName: process.env.DB_NAME,
+  } as ConnectOptions)
 }
 
 export function getDb() {
-  return _db;
+  if (!_client) {
+    throw new Error('You must connect to the DB first');
+  }
+
+  return _client.connection.db;
 }
 
 export function closeDb() {
-  return _client.close();
+  if (!_client) {
+    throw new Error('You must connect to the DB first');
+  }
+
+  return _client.disconnect();
 }
