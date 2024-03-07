@@ -1,14 +1,16 @@
-import express from 'express';
-import { Offers } from './app/offers';
-import { Cloud } from './app/cloud';
-import { Accounts } from './app/accounts';
-import { Counter } from './app/counter';
-import { Profiles } from './app/profiles';
-import { Authentication } from './app/authentication';
-import { Reports } from './app/reports';
-import { Profile } from './app/auth/profile';
+import express from 'express'
+import { Offers } from './app/offers'
+import { Cloud } from './app/cloud'
+import { Accounts } from './app/accounts'
+import { Counter } from './app/counter'
+import { Profiles } from './app/profiles'
+import { Authentication } from './app/authentication'
+import { Reports } from './app/reports'
+import { Profile } from './app/auth/profile'
+import { Reviews } from './app/reviews'
+import { Messages } from './app/messages'
 
-const router = express.Router();
+const router = express.Router()
 
 
 
@@ -24,16 +26,16 @@ router.post('/report',                        Reports.create)
 
 
 /*      Logged in users     */
-router.post('/messages/send')
-router.post('/messages/check')
+router.post('/messages/send',     Messages.sendMsgFromOffer)
+router.post('/messages/check',    Messages.checkAlreadyContainer)
 
 
 
 /*      Reviews     */
-router.get( '/reviews/:key/all')
-router.post('/reviews/create')
-router.post('/reviews/edit')
-router.post('/reviews/delete')
+router.get( '/reviews/:key/all',    Reviews.all)
+router.post('/reviews/create',      Reviews.create)
+router.post('/reviews/edit',        Reviews.edit)
+router.post('/reviews/remove',      Reviews.remove)
 
 
 
@@ -41,7 +43,7 @@ router.post('/reviews/delete')
 router.post('/auth/offers',         Offers.allMine)
 router.post('/auth/offers/create',  Offers.create)
 router.post('/auth/offers/edit',    Offers.edit)
-router.post('/auth/offers/delete',  Offers.remove)
+router.post('/auth/offers/remove',  Offers.remove)
 
 router.post('/auth/create-account',   Authentication.createAccount)
 router.post('/auth/login',            Authentication.login)
@@ -55,7 +57,7 @@ router.post('/auth/profile/update/social-data',     Profile.updateSocialData)
 router.post('/auth/avatar/update')
 
 router.post('/auth/gallery/upload')
-router.post('/auth/gallery/delete')
+router.post('/auth/gallery/remove')
 
 router.post('/auth/security/password')
 router.post('/auth/security/remove-account')

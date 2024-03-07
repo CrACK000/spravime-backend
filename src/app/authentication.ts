@@ -1,6 +1,6 @@
 import passport from 'passport'
 import { ObjectId } from 'mongodb'
-import { User } from './models/users';
+import { User } from './models/user';
 import bcrypt from 'bcrypt';
 
 export class Authentication {
@@ -78,11 +78,11 @@ export class Authentication {
 
     if(req.user) {
 
-      res.send({ loggedIn: true, user: req.user });
+      res.send({ loggedIn: true, user: req.user, newMsgCount: 0 })
 
     } else {
 
-      res.send({ loggedIn: false, user: null });
+      res.send({ loggedIn: false, user: null, newMsgCount: 0 })
 
     }
 

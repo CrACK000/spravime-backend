@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt'
 import passport from 'passport'
 import { Strategy as LocalStrategy } from 'passport-local'
 import { ObjectId } from 'mongodb'
-import { User } from '../app/models/users'
+import { User } from '../app/models/user'
 
 passport.use(
   new LocalStrategy(async (username, password, done) => {

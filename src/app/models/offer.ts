@@ -28,7 +28,7 @@ const OfferSchema: Schema = new Schema({
   title: { type: String, required: true },
   address: { type: String, required: true },
   description: { type: String, required: true },
-  author: { type: mongoose.Schema.Types.ObjectId, required: true },
+  author: { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'users' },
   section: { type: Number, required: true },
   category: { type: Number, required: true },
   status: { type: Boolean, required: false, default: true },

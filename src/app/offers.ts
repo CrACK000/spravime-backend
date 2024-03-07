@@ -17,7 +17,10 @@ export class Offers {
     }
 
     const id = new mongoose.Types.ObjectId(String(req.params.id))
-    const offer = await Offer.findOne({ _id: id })
+    const offer = await Offer.findOne({ _id: id }).populate({
+      path: 'author',
+      select: 'username avatar verify profile.name'
+    })
 
     if (!offer) {
       return res.status(404).send({ success: false, message: "Offer not found." })
