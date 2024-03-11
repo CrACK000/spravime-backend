@@ -2,6 +2,7 @@ import passport from 'passport'
 import { ObjectId } from 'mongodb'
 import { User } from './models/user';
 import bcrypt from 'bcrypt';
+import { MessagesContainer } from './models/message';
 
 export class Authentication {
 
@@ -78,7 +79,14 @@ export class Authentication {
 
     if(req.user) {
 
-      res.send({ loggedIn: true, user: req.user, newMsgCount: 0 })
+      const newMsgCount = await MessagesContainer.countDocuments({
+        $or:[
+          { 'container.from.user_id': req.user._id, 'container.to.messages.new': true },
+          { 'container.to.user_id': req.user._id, 'container.from.messages.new': true }
+        ]
+      })
+
+      res.send({ loggedIn: true, user: req.user, newMsgCount: newMsgCount })
 
     } else {
 

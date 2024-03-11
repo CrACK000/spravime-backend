@@ -5,33 +5,54 @@ export class Profile {
 
   static async updateLoginData(req: any, res: any) {
 
+    let errors = []
     const user_id = new mongoose.Types.ObjectId(String(req.user._id))
     const { username, email, phone } = req.body
 
     const alreadyUsername = await User.findOne({ username: username })
     const alreadyEmail = await User.findOne({ email: email })
 
+    // Overenie či existuje použivateľ s rovnakým username
     if (alreadyUsername && alreadyUsername._id.toString() !== user_id.toString()) {
-      return res.status(400).json({ success: false, message: 'Username already exists' })
+      errors.push({
+        where: 'username',
+        message: 'Username already exists'
+      })
     }
 
+    // Overenie či existuje použivateľ s rovnakým email
     if (alreadyEmail && alreadyEmail._id.toString() !== user_id.toString()) {
-      return res.status(400).json({ success: false, message: 'Email already exists' })
+      errors.push({
+        where: 'email',
+        message: 'Email already exists'
+      })
     }
 
-    const updatedData = {
-      username,
-      email,
-      phone
+    // Ak validácia formy bude nesprávna vráti odpoved a vnej všetky chyby
+    if (errors.length > 0) {
+      return res.send({
+        success: false,
+        message: 'Validation error',
+        errors
+      })
     }
 
+    // Nájsť užívateľa a upraviť mu data
+    const updatedData = { username, email, phone }
     const result = await User.findByIdAndUpdate(user_id, updatedData)
 
+    // Odpoveď ak zlyhá zapísanie do databázy
     if (!result) {
-      return res.status(404).json({ success: false, message: 'User not found' })
+      return res.send({
+        success: false,
+        message: 'User not found'
+      })
     }
 
-    return res.status(200).json({ success: true, message: 'User data updated successfully' })
+    return res.send({
+      success: true,
+      message: 'User data updated successfully'
+    })
 
   }
 

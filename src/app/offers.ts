@@ -60,10 +60,10 @@ export class Offers {
     await result.save()
 
     if (!result) {
-      return res.status(500).send({ success: false, message: "Database has failed." })
+      return res.send({ success: false, message: "Database has failed." })
     }
 
-    return res.status(201).send({ success: true, message: "The request has been successfully added.", last_id: result._id })
+    return res.send({ success: true, message: "The request has been successfully added.", last_id: result._id })
 
   }
 
@@ -72,7 +72,7 @@ export class Offers {
     const { title, section, category, address, time_range, start_at, end_at, description, offer_id } = req.body
 
     if (!offer_id || !mongoose.Types.ObjectId.isValid(String(offer_id))) {
-      return res.status(404).send({ success: false, message: "Invalid id." })
+      return res.send({ success: false, message: "Invalid id." })
     }
 
     const _id = new mongoose.Types.ObjectId(String(offer_id))
@@ -91,10 +91,10 @@ export class Offers {
     const result = await Offer.findOneAndUpdate(filter, update, options)
 
     if (!result) {
-      return res.status(404).send({ success: false, message: "Offer not found." })
+      return res.send({ success: false, message: "Offer not found." })
     }
 
-    return res.status(200).send({ success: true, message: "The request was successfully updated." })
+    return res.send({ success: true, message: "The request was successfully updated.", offer: result })
 
   }
 

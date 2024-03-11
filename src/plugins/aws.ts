@@ -1,8 +1,6 @@
-import { S3Client } from "@aws-sdk/client-s3";
-import multer from 'multer';
-import multerS3 from 'multer-s3';
-import { generateRandomString } from './functions';
-
+import { S3Client } from "@aws-sdk/client-s3"
+import multer from 'multer'
+import multerS3 from 'multer-s3'
 
 export const s3 = new S3Client({
   region: process.env.AWS_REGION,
@@ -12,16 +10,15 @@ export const s3 = new S3Client({
   }
 })
 
-export const upload = multer({
+export const upload = (foldername: string) => multer({
 
   storage: multerS3({
     s3,
     bucket: process.env.AWS_BUCKET,
 
-    key: function (req, file, cb) {
-      const uniqueFileName = generateRandomString(10)
+    key: function (req: any, file, cb) {
       const extension = file.mimetype.split('/')[1]
-      cb(null, `references/${Date.now().toString()}-${uniqueFileName}.${extension}`)
+      cb(null, `${foldername}/${Date.now().toString()}-[${req.user.username.toLowerCase()}].${extension}`)
     }
 
   })
