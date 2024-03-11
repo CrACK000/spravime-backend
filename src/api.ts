@@ -26,7 +26,6 @@ app.use(session({
   store: sessionStore,
 }))
 
-app.use(require('express-session')({ secret: 'keyboard cat', resave: false, saveUninitialized: false }))
 app.use(passport.initialize())
 app.use(passport.session())
 app.use(bodyParser.json())
