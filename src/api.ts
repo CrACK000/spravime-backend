@@ -20,10 +20,14 @@ const sessionStore = MongoStore.create({
 })
 
 app.use(session({
-  secret: 'keyboard cat',
+  name: "session",
+  secret: process.env.SESSION_SECRET || "secret",
   resave: false,
   saveUninitialized: false,
   store: sessionStore,
+  cookie: {
+    secure: process.env.NODE_ENV === "production"
+  }
 }))
 
 app.use(passport.initialize())
