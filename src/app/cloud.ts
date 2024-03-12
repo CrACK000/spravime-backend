@@ -2,10 +2,13 @@ import { GetObjectCommand } from '@aws-sdk/client-s3';
 import { s3 } from '../plugins/aws';
 import { Readable } from 'node:stream';
 import sharp from 'sharp';
+import { contentType } from 'mime-types'
 
 export class Cloud {
 
   static async getImg(req: any, res: any) {
+
+    res.set('Cross-Origin-Resource-Policy', 'cross-origin')
 
     const dir = req.params.dir
     const filename = req.params.img
@@ -21,6 +24,11 @@ export class Cloud {
     try {
 
       const dataStream: any = await s3.send(command)
+      const mimeType = contentType(filename); // Get the MIME Type from the file name
+
+      if (mimeType) {
+        res.set('Content-Type', mimeType); // Set the Content-Type header
+      }
 
       if (resolution) {
 

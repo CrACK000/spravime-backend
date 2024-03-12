@@ -50,7 +50,7 @@ router.post('/auth/offers/remove',                  Offers.remove)
 
 router.post('/auth/create-account',                 Authentication.createAccount)
 router.post('/auth/login',                          Authentication.login)
-router.get( '/auth/check-auth',                     Authentication.checkAuth)
+router.post('/auth/check-auth',                     Authentication.checkAuth)
 router.get( '/auth/logout',                         Authentication.logout)
 
 router.post('/auth/profile/update/login-data',      Profile.updateLoginData)
