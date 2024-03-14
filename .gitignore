@@ -21,7 +21,7 @@ yarn-debug.log*
 yarn-error.log*
 
 # local env files
-.env
+config.env
 .env.local
 .env.development.local
 .env.test.local
@@ -29,6 +29,5 @@ yarn-error.log*
 
 # out dir
 dist/
-/config.env
 /src/__tests__/
 /uploads/

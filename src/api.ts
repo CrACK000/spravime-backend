@@ -10,6 +10,8 @@ import { User } from './app/models/user'
 import bcrypt from 'bcrypt'
 import bodyParser from 'body-parser'
 import mongoose from 'mongoose'
+import lusca from "lusca"
+import flash from "express-flash"
 
 export const app = express()
 
@@ -39,6 +41,9 @@ app.use(session({
 
 app.use(passport.initialize())
 app.use(passport.session())
+app.use(flash());
+app.use(lusca.xframe("SAMEORIGIN"))
+app.use(lusca.xssProtection(true))
 
 passport.use(
   new LocalStrategy(async (username, password, done) => {

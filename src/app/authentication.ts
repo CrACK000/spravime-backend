@@ -31,7 +31,7 @@ export class Authentication {
           console.log('Error DB: last_login not updated.')
         }
 
-        return res.send({ success: true, loggedIn: true, user: user })
+        return res.send({ success: true, message: 'Si prihlásený.', loggedIn: true, user: user })
 
       })
 
