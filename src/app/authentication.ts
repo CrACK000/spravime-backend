@@ -79,7 +79,9 @@ export class Authentication {
 
     if(req.isAuthenticated()) {
 
-      const userId = new mongoose.Types.ObjectId(String(req.user._id))
+      const userId = req.user._id
+
+      console.log(userId)
 
       const newMsgCount = await MessagesContainer.countDocuments({
         $or:[
