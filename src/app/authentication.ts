@@ -79,7 +79,9 @@ export class Authentication {
 
     if(req.isAuthenticated()) {
 
-      const userId = req.session.passport.user
+      const userId = new mongoose.Types.ObjectId(String(req.session.passport.user))
+
+      const user = await User.findOne({ _id: userId })
 
       const newMsgCount = await MessagesContainer.countDocuments({
         $or:[
@@ -88,7 +90,7 @@ export class Authentication {
         ]
       })
 
-      res.send({ loggedIn: true, user: req.user, newMsgCount: newMsgCount })
+      res.send({ loggedIn: true, user: user, newMsgCount: newMsgCount })
 
     } else {
 
