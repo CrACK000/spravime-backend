@@ -1,5 +1,4 @@
 import express from 'express'
-import { NextFunction, Request, Response } from 'express'
 import { Offers } from '../controllers/offers'
 import { Authentication } from '../controllers/authentication'
 import { Profile } from '../controllers/auth/profile'
@@ -7,19 +6,11 @@ import { Gallery } from '../controllers/auth/gallery'
 import { Security } from '../controllers/auth/security'
 import { Messages } from '../controllers/messages'
 
-//import * as passportConfig from '../config/passport'
+import * as passportConfig from '../config/passport'
 import { upload } from '../config/aws'
 
 
 const auth = express.Router()
-
-const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
-  if (!req.isAuthenticated()) {
-    res.status(401).send('You are not authenticated')
-  } else {
-    return next()
-  }
-}
 
 /*      Auth    */
 auth.post('/auth/offers', Offers.allMine)
@@ -29,7 +20,7 @@ auth.post('/auth/offers/remove', Offers.remove)
 
 auth.post('/auth/create-account', Authentication.createAccount)
 auth.post('/auth/login', Authentication.login)
-auth.get( '/auth/check-auth', authMiddleware, Authentication.checkAuth)
+auth.get( '/auth/check-auth', passportConfig.authMiddleware, Authentication.checkAuth)
 auth.get( '/auth/logout', Authentication.logout)
 
 auth.post('/auth/profile/update/login-data', Profile.updateLoginData)
