@@ -9,6 +9,9 @@ import flash from 'express-flash'
 import passport from 'passport'
 import router from './middlewares/api.middleware'
 import auth from './middlewares/auth.middleware'
+import { Strategy as LocalStrategy } from 'passport-local';
+import { User } from './models/user';
+import bcrypt from 'bcrypt';
 
 export const app = express()
 
@@ -43,6 +46,39 @@ app.use(passport.session())
 app.use(flash())
 app.use(lusca.xframe("SAMEORIGIN"))
 app.use(lusca.xssProtection(true))
+
+passport.use(new LocalStrategy(async (username, password, done) => {
+  try {
+    const user = await User.findOne({ username: username })
+    if (!user) {
+      return done(null, false, { message: "No user with that username" })
+    }
+    if (!(await bcrypt.compare(password, user.password))) {
+      return done(null, false, { message: "Wrong password" })
+    }
+
+    return done(null, user)
+
+  } catch (error) {
+    return done(error)
+  }
+}))
+
+passport.serializeUser((user:any, done) => {
+  done(null, user._id)
+})
+
+passport.deserializeUser(async (user: any, done) => {
+
+  const userId = new mongoose.Types.ObjectId(String(user))
+
+  try {
+    const user = await User.findById(userId)
+    done(null, user)
+  } catch(err) {
+    done(err)
+  }
+})
 
 const VERSION = '/api/v1'
 
