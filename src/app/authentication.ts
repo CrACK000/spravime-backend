@@ -79,9 +79,7 @@ export class Authentication {
 
     if(req.isAuthenticated()) {
 
-      const userId = req.user._id
-
-      console.log(userId)
+      const userId = req.session.passport.user
 
       const newMsgCount = await MessagesContainer.countDocuments({
         $or:[

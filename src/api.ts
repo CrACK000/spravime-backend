@@ -2,40 +2,35 @@ import express from 'express'
 import cors from 'cors'
 import router from './router'
 import passport from 'passport'
-import helmet from 'helmet'
 import session from 'express-session'
 import MongoStore from 'connect-mongo'
 import { Strategy as LocalStrategy } from 'passport-local'
-import { User } from './app/models/user'
+import { User } from './app/models/user';
 import bcrypt from 'bcrypt'
 import bodyParser from 'body-parser'
-import mongoose from 'mongoose'
 import lusca from "lusca"
 import flash from "express-flash"
+import mongoose from 'mongoose';
 
 export const app = express()
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
-app.use(helmet())
 app.use(cors({ origin: process.env.FRONTEND, credentials: true }))
-
-
-const sessionStore = MongoStore.create({
-  mongoUrl: process.env.DB_URL,
-  dbName: process.env.DB_NAME,
-  collectionName: 'sessions'
-})
 
 app.use(session({
   name: "sessions",
-  secret: process.env.SESSION_SECRET || "secret",
+  secret: process.env.SESSION_SECRET || "secret123",
   resave: false,
   saveUninitialized: false,
-  store: sessionStore,
+  store: new MongoStore({
+    mongoUrl: process.env.DB_URL,
+    dbName: process.env.DB_NAME,
+    collectionName: 'sessions'
+  }),
   cookie: {
-    secure: process.env.NODE_ENV === "production"
+    secure: process.env.RAILWAY_ENVIRONMENT_NAME === "production"
   }
 }))
 

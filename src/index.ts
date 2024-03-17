@@ -1,17 +1,18 @@
 import { config } from 'dotenv'
 
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.RAILWAY_ENVIRONMENT_NAME !== 'production') {
   config({ path: './config.env' })
 }
 
 import { app } from './api'
 import { closeDb, connectToDb } from './plugins/database'
 
-const port = process.env.PORT
+const PORT = process.env.PORT || 4000
+//const ENVIRONMENT = process.env.RAILWAY_ENVIRONMENT_NAME || "development"
 
 connectToDb().then(() => {
-  app.listen(port, () =>
-    console.log(`API available on http://localhost:${port}`)
+  app.listen(PORT, () =>
+    console.log(`API available on http://localhost:${PORT}`)
   )
 }).catch(err => {
   console.error("Database connection failed: ", err)

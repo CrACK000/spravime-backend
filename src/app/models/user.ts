@@ -56,7 +56,7 @@ const ReviewsDataSchema = new Schema({
   count_reviews: { type: Number, required: false, default: 0 },
 }, { _id: false })
 
-export interface User extends Document {
+export interface UserDocument extends Document {
   _id: mongoose.Schema.Types.ObjectId,
   username: string,
   email: string,
@@ -90,4 +90,4 @@ const UserSchema: Schema = new Schema({
   last_login: { type: String, required: false, default: () => new Date().toISOString() },
 }, { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } })
 
-export const User = mongoose.model<User>('users', UserSchema)
+export const User = mongoose.model<UserDocument>('users', UserSchema)
