@@ -9,6 +9,17 @@ if (ENVIRONMENT === 'development') {
 }
 
 import { app } from './api'
+import mongoose from 'mongoose';
+
+mongoose.connect(process.env.DB_URL)
+  .then(() => {
+    /** ready to use. The `mongoose.connect()` promise resolves to undefined. */
+    console.log('db ok')
+  })
+  .catch(err => {
+    console.log(`MongoDB connection error. Please make sure MongoDB is running. ${err}`)
+    // process.exit()
+  })
 
 const http = PORT === 4000 ? 'http://' : 'https://'
 
