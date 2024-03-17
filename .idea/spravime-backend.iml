@@ -5,6 +5,7 @@
       <sourceFolder url="file://$MODULE_DIR$/src/__tests__" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/app" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/controllers" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/dist" />
       <excludeFolder url="file://$MODULE_DIR$/uploads" />
     </content>
     <orderEntry type="inheritedJdk" />
