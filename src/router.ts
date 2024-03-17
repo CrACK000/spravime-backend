@@ -1,4 +1,4 @@
-import express from 'express'
+import express, { Request, Response, NextFunction } from 'express'
 import { Offers } from './app/offers'
 import { Cloud } from './app/cloud'
 import { Accounts } from './app/accounts'
@@ -14,6 +14,14 @@ import { Gallery } from './app/auth/gallery'
 import { upload } from './plugins/aws'
 
 const router = express.Router()
+
+const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
+  if (!req.isAuthenticated()) {
+    res.status(401).send('You are not authenticated')
+  } else {
+    return next()
+  }
+}
 
 
 
@@ -50,7 +58,7 @@ router.post('/auth/offers/remove',                  Offers.remove)
 
 router.post('/auth/create-account',                 Authentication.createAccount)
 router.post('/auth/login',                          Authentication.login)
-router.get( '/auth/check-auth',                     Authentication.checkAuth)
+router.get( '/auth/check-auth',   authMiddleware,                  Authentication.checkAuth)
 router.get( '/auth/logout',                         Authentication.logout)
 
 router.post('/auth/profile/update/login-data',      Profile.updateLoginData)
