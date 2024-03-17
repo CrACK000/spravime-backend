@@ -25,7 +25,7 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(cors({ origin: process.env.FRONTEND, credentials: true }))
 app.use(session({
-  name: "sessions",
+  name: "Spravime Sessions",
   secret: process.env.SESSION_SECRET || "secret123",
   resave: false,
   saveUninitialized: false,
