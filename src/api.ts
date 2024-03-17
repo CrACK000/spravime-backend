@@ -19,7 +19,7 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
 app.use(helmet())
-app.use(cors({ origin: "*", credentials: true }))
+app.use(cors({ origin: process.env.FRONTEND, credentials: true }))
 
 
 const sessionStore = MongoStore.create({
