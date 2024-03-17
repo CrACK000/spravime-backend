@@ -1,10 +1,10 @@
 import bcrypt from 'bcrypt'
 import mongoose from 'mongoose'
 import { Gallery } from './gallery'
-import { Offer } from '../models/offer'
-import { User } from '../models/user'
-import { Review } from '../models/review'
-import { MessagesContainer } from '../models/message'
+import { Offer } from '../../models/offer'
+import { User } from '../../models/user'
+import { Review } from '../../models/review'
+import { MessagesContainer } from '../../models/message'
 
 export class Security {
 

@@ -1,29 +1,19 @@
 import { config } from 'dotenv'
 
-if (process.env.RAILWAY_ENVIRONMENT_NAME !== 'production') {
+const PORT        = process.env.PORT || 4000
+const ENVIRONMENT = process.env.RAILWAY_ENVIRONMENT_NAME || "development"
+const DOMAIN      = process.env.RAILWAY_PUBLIC_DOMAIN || "localhost"
+
+if (ENVIRONMENT === 'development') {
   config({ path: './config.env' })
 }
 
 import { app } from './api'
-import { closeDb, connectToDb } from './plugins/database'
 
-const PORT = process.env.PORT || 4000
-//const ENVIRONMENT = process.env.RAILWAY_ENVIRONMENT_NAME || "development"
+const http = PORT === 4000 ? 'http://' : 'https://'
 
-connectToDb().then(() => {
-  app.listen(PORT, () =>
-    console.log(`API available on http://localhost:${PORT}`)
-  )
-}).catch(err => {
-  console.error("Database connection failed: ", err)
-  process.exit(1)
+const server = app.listen(PORT, () => {
+  console.log(`🚀 API is running at ${http}${DOMAIN}:${PORT}`)
 })
 
-process.on('SIGINT', closeGracefully)
-process.on('SIGTERM', closeGracefully)
-
-function closeGracefully() {
-  closeDb().finally(() => {
-    process.exit()
-  })
-}
+export default server

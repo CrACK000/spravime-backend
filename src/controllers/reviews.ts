@@ -1,6 +1,6 @@
-import { Review } from './models/review'
+import { Review } from '../models/review'
 import mongoose from 'mongoose'
-import { User } from './models/user'
+import { User } from '../models/user'
 
 export class Reviews {
 

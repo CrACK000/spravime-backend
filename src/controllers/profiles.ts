@@ -1,4 +1,4 @@
-import { User } from './models/user';
+import { User } from '../models/user';
 import mongoose from 'mongoose';
 
 export class Profiles {

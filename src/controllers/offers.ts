@@ -1,4 +1,4 @@
-import { Offer } from './models/offer'
+import { Offer } from '../models/offer'
 import mongoose from 'mongoose'
 
 export class Offers {

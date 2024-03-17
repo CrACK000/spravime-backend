@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { Report } from './models/report';
+import { Report } from '../models/report';
 
 export class Reports {
 

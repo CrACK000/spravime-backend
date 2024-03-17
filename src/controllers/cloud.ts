@@ -1,5 +1,5 @@
 import { GetObjectCommand } from '@aws-sdk/client-s3';
-import { s3 } from '../plugins/aws';
+import { s3 } from '../config/aws';
 import { Readable } from 'node:stream';
 import sharp from 'sharp';
 import { contentType } from 'mime-types'

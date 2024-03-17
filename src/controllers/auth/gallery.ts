@@ -1,8 +1,8 @@
-import { User } from '../models/user'
+import { User } from '../../models/user'
 import mongoose from 'mongoose'
 import { DeleteObjectCommand, DeleteObjectCommandInput } from '@aws-sdk/client-s3';
-import { s3 } from '../../plugins/aws'
-import { checkValidObjectId } from '../../plugins/functions';
+import { s3 } from '../../config/aws'
+import { checkValidObjectId } from '../../config/functions';
 
 export class Gallery {
 

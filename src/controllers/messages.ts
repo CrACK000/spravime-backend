@@ -1,7 +1,7 @@
-import { MessagesContainer } from './models/message'
+import { MessagesContainer } from '../models/message'
 import mongoose from 'mongoose'
-import { Offer } from './models/offer'
-import { checkValidObjectId } from '../plugins/functions'
+import { Offer } from '../models/offer'
+import { checkValidObjectId } from '../config/functions'
 
 export class Messages {
 

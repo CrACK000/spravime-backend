@@ -1,7 +1,7 @@
 import passport from 'passport'
-import { User } from './models/user';
+import { User } from '../models/user';
 import bcrypt from 'bcrypt';
-import { MessagesContainer } from './models/message';
+import { MessagesContainer } from '../models/message';
 import mongoose from 'mongoose';
 
 export class Authentication {
