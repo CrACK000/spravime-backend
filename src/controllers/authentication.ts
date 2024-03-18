@@ -77,26 +77,18 @@ export class Authentication {
 
   static async checkAuth(req: any, res: any) {
 
-    if(req.isAuthenticated()) {
+    const userId = new mongoose.Types.ObjectId(String(req.session.passport.user))
 
-      const userId = new mongoose.Types.ObjectId(String(req.session.passport.user))
+    const user = await User.findOne({ _id: userId })
 
-      const user = await User.findOne({ _id: userId })
+    const newMsgCount = await MessagesContainer.countDocuments({
+      $or:[
+        { 'container.from.user_id': userId, 'container.to.messages.new': true },
+        { 'container.to.user_id': userId, 'container.from.messages.new': true }
+      ]
+    })
 
-      const newMsgCount = await MessagesContainer.countDocuments({
-        $or:[
-          { 'container.from.user_id': userId, 'container.to.messages.new': true },
-          { 'container.to.user_id': userId, 'container.from.messages.new': true }
-        ]
-      })
-
-      res.send({ loggedIn: true, user: user, newMsgCount: newMsgCount })
-
-    } else {
-
-      res.send({ loggedIn: false, user: null, newMsgCount: 0 })
-
-    }
+    res.send({ loggedIn: true, user: user, newMsgCount: newMsgCount })
 
   }
 
