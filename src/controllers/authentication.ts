@@ -1,8 +1,10 @@
-import passport from 'passport'
+import passport from 'passport';
 import { User } from '../models/user';
 import bcrypt from 'bcrypt';
 import { MessagesContainer } from '../models/message';
 import mongoose from 'mongoose';
+import { generateToken } from '../utils/jwtHelper';
+import jwt from 'jsonwebtoken';
 
 export class Authentication {
 
@@ -31,7 +33,16 @@ export class Authentication {
           console.log('Error DB: last_login not updated.')
         }
 
-        return res.send({ success: true, message: 'Si prihlásený.', loggedIn: true, user: user })
+        const token = generateToken(user._id)
+
+        return res.header('auth-token', token)
+          .send({
+            success: true,
+            message: 'Si prihlásený.',
+            loggedIn: true,
+            user: user,
+            token: token
+          })
 
       })
 
@@ -77,18 +88,35 @@ export class Authentication {
 
   static async checkAuth(req: any, res: any) {
 
-    const userId = new mongoose.Types.ObjectId(String(req.session.passport.user))
+    const bearerHeader = req.headers['authorization'];
 
-    const user = await User.findOne({ _id: userId })
+    if (bearerHeader) {
+      const bearer = bearerHeader.split(' ');
+      req.token = bearer[1];
+    } else {
+      res.sendStatus(403);
+    }
 
-    const newMsgCount = await MessagesContainer.countDocuments({
-      $or:[
-        { 'container.from.user_id': userId, 'container.to.messages.new': true },
-        { 'container.to.user_id': userId, 'container.from.messages.new': true }
-      ]
+    jwt.verify(req.token, process.env.SESSION_SECRET, async (err: any, data: any) => {
+      if (err) {
+        res.status(403).send('Auth sa nepodaril')
+      } else {
+
+        const userId = new mongoose.Types.ObjectId(String(req.session.passport.user))
+
+        const user = await User.findOne({ _id: userId })
+
+        const newMsgCount = await MessagesContainer.countDocuments({
+          $or:[
+            { 'container.from.user_id': userId, 'container.to.messages.new': true },
+            { 'container.to.user_id': userId, 'container.from.messages.new': true }
+          ]
+        })
+
+        res.send({ loggedIn: true, user: user, newMsgCount: newMsgCount })
+
+      }
     })
-
-    res.send({ loggedIn: true, user: user, newMsgCount: newMsgCount })
 
   }
 

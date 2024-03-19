@@ -14,11 +14,11 @@ export const app = express()
 
 mongoose.connect(process.env.DB_URL)
   .then(() => {
-    /** ready to use. The `mongoose.connect()` promise resolves to undefined. */
+    console.log(`✅ Database is connected`)
   })
   .catch(err => {
-    console.log(`MongoDB connection error. Please make sure MongoDB is running. ${err}`)
-    // process.exit()
+    console.log(`⛔ MongoDB connection error. Please make sure MongoDB is running. ${err}`)
+    process.exit()
   })
 
 app.use(bodyParser.json())
