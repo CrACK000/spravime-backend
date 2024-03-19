@@ -35,7 +35,7 @@ export class Authentication {
 
         const token = generateToken(user._id)
 
-        return res.header('auth-token', token)
+        return res.header('authorization', token)
           .send({
             success: true,
             message: 'Si prihlásený.',
