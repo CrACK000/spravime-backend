@@ -13,17 +13,17 @@ export class Authentication {
     await passport.authenticate('local', function (err: any, user: any) {
 
       if (err) {
-        return res.send({ success: false, message: 'Server error' })
+        return res.send({ success: false, message: err })
       }
 
       if (!user) {
-        return res.send({ success: false, message: 'Server error' })
+        return res.send({ success: false, message: 'User not found' })
       }
 
       req.logIn(user, function(err: any) {
 
         if (err) {
-          return res.send({ success: false, message: 'Server error' })
+          return res.send({ success: false, message: err })
         }
 
         const id = new mongoose.Types.ObjectId(String(user._id))
