@@ -4,7 +4,6 @@ import bcrypt from 'bcrypt';
 import { MessagesContainer } from '../models/message';
 import mongoose from 'mongoose';
 import { generateToken } from '../utils/jwtHelper';
-import jwt from 'jsonwebtoken';
 
 export class Authentication {
 
@@ -35,7 +34,7 @@ export class Authentication {
 
         const token = generateToken(user._id)
 
-        return res.header('authorization', token)
+        return res.header('Authorization', `Bearer ${token}`)
           .send({
             success: true,
             message: 'Si prihlásený.',
@@ -88,35 +87,18 @@ export class Authentication {
 
   static async checkAuth(req: any, res: any) {
 
-    const bearerHeader = req.headers['authorization'];
+    const userId = new mongoose.Types.ObjectId(String(req.session.passport.user))
 
-    if (bearerHeader) {
-      const bearer = bearerHeader.split(' ');
-      req.token = bearer[1];
-    } else {
-      res.sendStatus(403);
-    }
+    const user = await User.findOne({ _id: userId })
 
-    jwt.verify(req.token, process.env.SESSION_SECRET, async (err: any, data: any) => {
-      if (err) {
-        res.status(403).send('Auth sa nepodaril')
-      } else {
-
-        const userId = new mongoose.Types.ObjectId(String(req.session.passport.user))
-
-        const user = await User.findOne({ _id: userId })
-
-        const newMsgCount = await MessagesContainer.countDocuments({
-          $or:[
-            { 'container.from.user_id': userId, 'container.to.messages.new': true },
-            { 'container.to.user_id': userId, 'container.from.messages.new': true }
-          ]
-        })
-
-        res.send({ loggedIn: true, user: user, newMsgCount: newMsgCount })
-
-      }
+    const newMsgCount = await MessagesContainer.countDocuments({
+      $or:[
+        { 'container.from.user_id': userId, 'container.to.messages.new': true },
+        { 'container.to.user_id': userId, 'container.from.messages.new': true }
+      ]
     })
+
+    res.send({ loggedIn: true, user: user, newMsgCount: newMsgCount })
 
   }
 
