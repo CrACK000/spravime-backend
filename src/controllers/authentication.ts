@@ -1,52 +1,40 @@
-import passport from 'passport';
-import { User } from '../models/user';
-import bcrypt from 'bcrypt';
-import { MessagesContainer } from '../models/message';
-import mongoose from 'mongoose';
-import { generateToken } from '../utils/jwtHelper';
+import { User } from '../models/user'
+import bcrypt from 'bcrypt'
+import { MessagesContainer } from '../models/message'
+import mongoose from 'mongoose'
+import { generateToken, validateToken } from '../utils/jwtHelper'
 
 export class Authentication {
 
-  static async login(req: any, res: any, next: any) {
+  static async login(req: any, res: any) {
+    const user = await User.findOne({ username: req.body.username })
 
-    await passport.authenticate('local', function (err: any, user: any) {
+    if (!user) {
+      return res.status(400).json({ error: "Invalid username" })
+    }
 
-      if (err) {
-        return res.send({ success: false, message: err })
-      }
+    const validPassword = await bcrypt.compare(req.body.password, user.password)
 
-      if (!user) {
-        return res.send({ success: false, message: 'User not found' })
-      }
+    if (!validPassword) {
+      return res.status(400).json({ error: "Invalid password" })
+    }
 
-      req.logIn(user, function(err: any) {
+    const id = new mongoose.Types.ObjectId(String(user._id))
+    const last_login = User.updateOne({ _id: id }, { $set: { last_login: new Date().toISOString() } })
 
-        if (err) {
-          return res.send({ success: false, message: err })
-        }
+    if (!last_login) {
+      console.error('Error DB: last_login not updated.')
+    }
 
-        const id = new mongoose.Types.ObjectId(String(user._id))
-        const last_login = User.updateOne({ _id: id }, { $set: { last_login: new Date().toISOString() } })
+    const token = generateToken(user._id)
 
-        if (!last_login) {
-          console.log('Error DB: last_login not updated.')
-        }
-
-        const token = generateToken(user._id)
-
-        return res.header('Authorization', `Bearer ${token}`)
-          .send({
-            success: true,
-            message: 'Si prihlásený.',
-            loggedIn: true,
-            user: user,
-            token: token
-          })
-
+    res
+      .header('Authorization', `Bearer ${token}`)
+      .json({
+        success: true,
+        message: 'Si prihlásený.',
+        token
       })
-
-    })(req, res, next)
-
   }
 
   static async createAccount(req: any, res: any) {
@@ -86,39 +74,36 @@ export class Authentication {
   }
 
   static async checkAuth(req: any, res: any) {
+    const authHeader = req.get('Authorization') || ''
+    const token = authHeader.replace('Bearer ', '')
 
-    const userId = new mongoose.Types.ObjectId(String(req.session.passport.user))
+    let userId: any
 
-    const user = await User.findOne({ _id: userId })
+    try {
+      const payload = validateToken(token) as any
+      userId = payload.id
+    } catch (error) {
+      console.log('[checkAuth] Invalid or missing token')
+    }
+
+    const user = await User.findOne({ _id: userId }).select('-password')
+
+    if (!user) {
+      return res.status(401).json({ loggedIn: false })
+    }
 
     const newMsgCount = await MessagesContainer.countDocuments({
-      $or:[
+      $or: [
         { 'container.from.user_id': userId, 'container.to.messages.new': true },
         { 'container.to.user_id': userId, 'container.from.messages.new': true }
-      ]
-    })
+      ],
+    });
 
     res.send({ loggedIn: true, user: user, newMsgCount: newMsgCount })
-
   }
 
   static async logout(req: any, res: any) {
-
-    req.logout(function (err: any) {
-
-      if (err) {
-
-        console.log(err);
-        res.send({ success: false })
-
-      } else {
-
-        res.send({ success: true, message: "Bol si odhlásený z účtu." })
-
-      }
-
-    })
-
+    res.send({ success: true, message: "Bol si odhlásený z účtu." })
   }
 
 }

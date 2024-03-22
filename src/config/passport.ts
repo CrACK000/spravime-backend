@@ -1,57 +1,32 @@
-import { NextFunction, Response } from 'express';
-import { Strategy as LocalStrategy } from 'passport-local';
-import bcrypt from 'bcrypt';
-import mongoose from 'mongoose';
-import passport from 'passport';
-import { User } from '../models/user';
-import { validateToken } from '../utils/jwtHelper';
+import passport from 'passport'
+import { Strategy as JwtStrategy } from 'passport-jwt'
+import { User } from '../models/user'
+import { Algorithm } from 'jsonwebtoken'
 
-passport.use(new LocalStrategy(async (username, password, done) => {
+const publicKey = process.env.PUBLIC_KEY
+
+let opts = {
+  jwtFromRequest: (req: any) => {
+    return req.get('Authorization')?.replace('Bearer ', '')
+  },
+  secretOrKey: publicKey,
+  algorithms: [process.env.SECRET_ALGORITHM] as Algorithm[]
+}
+
+passport.use(new JwtStrategy(opts, async function (jwt_payload, done) {
+
   try {
-    const user = await User.findOne({ username: username })
-    if (!user) {
-      return done(null, false, { message: "No user with that username" })
-    }
-    if (!(await bcrypt.compare(password, user.password))) {
-      return done(null, false, { message: "Wrong password" })
-    }
+    const user = await User.findOne({ _id: jwt_payload.id }).select('-password')
 
-    return done(null, user)
-
-  } catch (error) {
-    return done(error)
+    if (user) {
+      return done(null, user)
+    } else {
+      return done(null, false)
+    }
+  } catch (err) {
+    console.log('Error finding user:', err)
+    return done(err, false)
   }
 }))
 
-passport.serializeUser((user:any, done) => {
-  done(null, user._id)
-})
-
-passport.deserializeUser(async (user: any, done) => {
-
-  const userId = new mongoose.Types.ObjectId(String(user))
-
-  try {
-    const user = await User.findById(userId)
-    done(null, user)
-  } catch(err) {
-    done(err)
-  }
-})
-
-export const authMiddleware = (req: any, res: Response, next: NextFunction) => {
-  let token = req.header('Authorization')
-
-  if (!token) return res.status(401).send('Access Denied')
-
-  if (token?.startsWith("Bearer ")){
-    token = token.slice(7, token.length)
-  }
-
-  try {
-    req.user._id = validateToken(token)
-    return next()
-  } catch (err) {
-    return res.status(400).send('Invalid token')
-  }
-}
+export const authMiddleware = passport.authenticate('jwt', { session: false })

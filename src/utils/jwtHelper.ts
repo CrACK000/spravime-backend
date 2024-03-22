@@ -1,11 +1,13 @@
-import jwt from 'jsonwebtoken'
+import jwt, { Algorithm } from 'jsonwebtoken'
 
-const secret = process.env.SESSION_SECRET
+const privateKey = process.env.PRIVATE_KEY
+const publicKey = process.env.PUBLIC_KEY
+const algorithm = (process.env.SECRET_ALGORITHM as unknown) as Algorithm
 
 export const generateToken = (id: any) => {
-  return jwt.sign({ id }, secret, { expiresIn: 60 * 60 })
+  return jwt.sign({ id }, privateKey, { expiresIn: '30d', algorithm: algorithm })
 }
 
 export const validateToken = (token: any) => {
-  return jwt.verify(token, secret)
+  return jwt.verify(token, publicKey, { algorithms: [algorithm] })
 }
