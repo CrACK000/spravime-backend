@@ -37,7 +37,7 @@ export interface MessagesContainer extends Document {
 
 const ContainerSchema: Schema = new Schema({
   _id: { type: mongoose.Schema.Types.ObjectId, auto: true },
-  key: { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'offers' },
+  key: { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'requests' },
   container: {
     from: {
       user_id: { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'users' },

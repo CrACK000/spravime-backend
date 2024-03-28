@@ -1,24 +1,24 @@
 import { MessagesContainer } from '../models/message'
 import mongoose from 'mongoose'
-import { Offer } from '../models/offer'
+import { RequestModel } from '../models/request-model'
 import { checkValidObjectId } from '../config/functions'
 
 export class Messages {
 
-  static async sendMsgFromOffer(req: any, res: any) {
+  static async sendMsgFromRequest(req: any, res: any) {
 
-    const { offerId, msg } = req.body
+    const { requestId, msg } = req.body
 
-    if (!checkValidObjectId(offerId)) {
+    if (!checkValidObjectId(requestId)) {
       return res.status(404).send({  success: false, message: "Invalid id." })
     }
 
-    const key = new mongoose.Types.ObjectId(String(offerId))
+    const key = new mongoose.Types.ObjectId(String(requestId))
     const from = new mongoose.Types.ObjectId(String(req.user._id))
 
-    const selectOffer = await Offer.findOne({ _id: key })
+    const selectRequest = await RequestModel.findOne({ _id: key })
 
-    const to = new mongoose.Types.ObjectId(String(selectOffer.author))
+    const to = new mongoose.Types.ObjectId(String(selectRequest.author))
 
     // 1. Create an empty container
     const createContainer = new MessagesContainer({
@@ -61,22 +61,22 @@ export class Messages {
 
   static async checkAlreadyContainer(req: any, res: any) {
 
-    const { offerId } = req.body
+    const { requestId } = req.body
 
     if (!req.user) {
       return res.send({ success: false, message: "Unauthorized." })
     }
 
-    if (!checkValidObjectId(offerId)) {
+    if (!checkValidObjectId(requestId)) {
       return res.send({ success: false, message: "Invalid id." })
     }
 
-    const key = new mongoose.Types.ObjectId(String(offerId))
+    const key = new mongoose.Types.ObjectId(String(requestId))
     const from = new mongoose.Types.ObjectId(String(req.user._id))
 
-    const selectOffer = await Offer.findOne({ _id: key })
+    const selectRequest = await RequestModel.findOne({ _id: key })
 
-    const to = new mongoose.Types.ObjectId(String(selectOffer.author))
+    const to = new mongoose.Types.ObjectId(String(selectRequest.author))
 
     if (String(to) === String(from)) {
       return res.send({ success: false, message: "Cannot send message to yourself." })

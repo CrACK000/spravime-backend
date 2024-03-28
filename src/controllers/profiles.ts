@@ -10,7 +10,7 @@ export class Profiles {
     }
 
     const id = new mongoose.Types.ObjectId(String(req.params.id))
-    const response = await User.findOne({ _id: id })
+    const response = await User.findOne({ _id: id }).select('-password')
 
     if (!response) {
       return res.status(404).send({ success: false, message: "User not found." })

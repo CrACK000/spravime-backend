@@ -1,5 +1,5 @@
 import express from 'express'
-import { Offers } from '../controllers/offers'
+import { RequestsClass } from '../controllers/requests'
 import { Authentication } from '../controllers/authentication'
 import { Profile } from '../controllers/auth/profile'
 import { Gallery } from '../controllers/auth/gallery'
@@ -13,10 +13,10 @@ import { upload } from '../config/aws'
 const auth = express.Router()
 
 /*      Auth    */
-auth.post('/auth/offers', passportConfig.authMiddleware, Offers.allMine)
-auth.post('/auth/offers/create', passportConfig.authMiddleware, Offers.create)
-auth.post('/auth/offers/edit', passportConfig.authMiddleware, Offers.edit)
-auth.post('/auth/offers/remove', passportConfig.authMiddleware, Offers.remove)
+auth.post('/auth/requests', passportConfig.authMiddleware, RequestsClass.allMine)
+auth.post('/auth/requests/create', passportConfig.authMiddleware, RequestsClass.create)
+auth.post('/auth/requests/edit', passportConfig.authMiddleware, RequestsClass.edit)
+auth.post('/auth/requests/remove', passportConfig.authMiddleware, RequestsClass.remove)
 
 auth.post('/auth/create-account', Authentication.createAccount)
 auth.post('/auth/login', Authentication.login)

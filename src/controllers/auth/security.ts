@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt'
 import mongoose from 'mongoose'
 import { Gallery } from './gallery'
-import { Offer } from '../../models/offer'
+import { RequestModel } from '../../models/request-model'
 import { User } from '../../models/user'
 import { Review } from '../../models/review'
 import { MessagesContainer } from '../../models/message'
@@ -83,8 +83,8 @@ export class Security {
       })
 
 
-      // Remove offers
-      await Offer.deleteMany({ author: user_id })
+      // Remove requests
+      await RequestModel.deleteMany({ author: user_id })
 
       // Finally, remove user account
       await User.deleteOne({ _id: user_id })

@@ -1,11 +1,14 @@
-import { Offer } from '../models/offer'
+import { RequestModel } from '../models/request-model'
 import mongoose from 'mongoose'
 
-export class Offers {
+export class RequestsClass {
 
   static async all(req: any, res: any) {
 
-    const response = await Offer.find()
+    const response = await RequestModel.find().populate({
+      path: 'author',
+      select: 'username avatar verify profile.name'
+    })
     return res.status(200).send(response)
 
   }
@@ -17,16 +20,16 @@ export class Offers {
     }
 
     const id = new mongoose.Types.ObjectId(String(req.params.id))
-    const offer = await Offer.findOne({ _id: id }).populate({
+    const request = await RequestModel.findOne({ _id: id }).populate({
       path: 'author',
       select: 'username avatar verify profile.name'
     })
 
-    if (!offer) {
-      return res.status(404).send({ success: false, message: "Offer not found." })
+    if (!request) {
+      return res.status(404).send({ success: false, message: "Request not found." })
     }
 
-    return res.status(200).send(offer)
+    return res.status(200).send(request)
 
   }
 
@@ -37,7 +40,7 @@ export class Offers {
     }
 
     const userId = new mongoose.Types.ObjectId(String(req.user._id))
-    const response = await Offer.find({ author: userId })
+    const response = await RequestModel.find({ author: userId })
     return res.status(200).send(response)
 
   }
@@ -56,7 +59,7 @@ export class Offers {
       author: new mongoose.Types.ObjectId(String(req.user.id)),
     }
 
-    const result = new Offer(document)
+    const result = new RequestModel(document)
     await result.save()
 
     if (!result) {
@@ -69,13 +72,13 @@ export class Offers {
 
   static async edit(req: any, res: any) {
 
-    const { title, section, category, address, time_range, start_at, end_at, description, offer_id } = req.body
+    const { title, section, category, address, time_range, start_at, end_at, description, request_id } = req.body
 
-    if (!offer_id || !mongoose.Types.ObjectId.isValid(String(offer_id))) {
+    if (!request_id || !mongoose.Types.ObjectId.isValid(String(request_id))) {
       return res.send({ success: false, message: "Invalid id." })
     }
 
-    const _id = new mongoose.Types.ObjectId(String(offer_id))
+    const _id = new mongoose.Types.ObjectId(String(request_id))
     const filter = { _id: _id }
     const update = {
       $set: {
@@ -88,13 +91,13 @@ export class Offers {
       }
     }
     const options = { new: true }
-    const result = await Offer.findOneAndUpdate(filter, update, options)
+    const result = await RequestModel.findOneAndUpdate(filter, update, options)
 
     if (!result) {
-      return res.send({ success: false, message: "Offer not found." })
+      return res.send({ success: false, message: "Request not found." })
     }
 
-    return res.send({ success: true, message: "The request was successfully updated.", offer: result })
+    return res.send({ success: true, message: "The request was successfully updated.", request: result })
 
   }
 
@@ -103,10 +106,10 @@ export class Offers {
     const { ids } = req.body
 
     const filter = { _id: { $in: ids } }
-    const result = await Offer.deleteMany(filter)
+    const result = await RequestModel.deleteMany(filter)
 
     if (result.deletedCount === 0) {
-      return res.status(404).send({ success: false, message: "Offer not found." })
+      return res.status(404).send({ success: false, message: "Request not found." })
     }
 
     return res.status(200).send({ success: true, message: "The request was successfully removed." })

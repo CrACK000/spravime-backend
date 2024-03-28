@@ -1,5 +1,5 @@
 import express from 'express'
-import { Offers } from '../controllers/offers'
+import { RequestsClass } from '../controllers/requests'
 import { Cloud } from '../controllers/cloud'
 import { Accounts } from '../controllers/accounts'
 import { Counter } from '../controllers/counter'
@@ -11,8 +11,8 @@ import { Messages } from '../controllers/messages'
 const router = express.Router()
 
 /*      Guest     */
-router.get( '/offers',                              Offers.all)
-router.get( '/offers/:id',                          Offers.view)
+router.get( '/requests',                              RequestsClass.all)
+router.get( '/requests/:id',                          RequestsClass.view)
 router.get( '/cloud/:dir/:img/:resolution?',        Cloud.getImg)
 router.get( '/accounts',                            Accounts.accounts)
 router.get( '/profile/:id',                         Profiles.view)
@@ -20,7 +20,7 @@ router.post('/counter/views',                       Counter.views)
 router.post('/report',                              Reports.create)
 
 /*      Logged in users     */
-router.post('/messages/send',                       Messages.sendMsgFromOffer)
+router.post('/messages/send',                       Messages.sendMsgFromRequest)
 router.post('/messages/check',                      Messages.checkAlreadyContainer)
 
 /*      Reviews     */

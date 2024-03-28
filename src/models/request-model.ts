@@ -5,7 +5,7 @@ interface TimeRange {
   end_at: string
 }
 
-export interface Offer extends Document {
+export interface RequestModel extends Document {
   _id: mongoose.Schema.Types.ObjectId,
   title: string,
   address: string,
@@ -16,6 +16,7 @@ export interface Offer extends Document {
   status: boolean,
   disabled: boolean,
   approved: boolean,
+  top: boolean,
   time_range: null | TimeRange,
   views: number,
   closed_at: string,
@@ -23,7 +24,7 @@ export interface Offer extends Document {
   updated_at: string,
 }
 
-const OfferSchema: Schema = new Schema({
+const RequestModelSchema: Schema = new Schema({
   _id: { type: mongoose.Schema.Types.ObjectId, auto: true },
   title: { type: String, required: true },
   address: { type: String, required: true },
@@ -34,9 +35,10 @@ const OfferSchema: Schema = new Schema({
   status: { type: Boolean, required: false, default: true },
   disabled: { type: Boolean, required: false, default: false },
   approved: { type: Boolean, required: false, default: true },
+  top: { type: Boolean, required: false, default: false },
   time_range: { type: Object, required: false, default: null },
   views: { type: Number, required: false, default: 0 },
   closed_at: { type: String, required: false, default: () => new Date(new Date().setMonth(new Date().getMonth() + 3)).toISOString() },
 }, { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } })
 
-export const Offer = mongoose.model<Offer>('offers', OfferSchema)
+export const RequestModel = mongoose.model<RequestModel>('requests', RequestModelSchema)
